@@ -1,0 +1,125 @@
+Anita
+
+Profile inputs (derived from must questions)
+
+Monthly income: ₹28,000
+Income stability: Unstable
+Earning members: 1
+Dependents: 2
+Existing monthly debt: ₹0
+Outstanding debt: ₹35,000
+Essential expenses: ₹0
+Requested loan: ₹1,50,000
+Purpose: Electric scooter for delivery work
+Loan type: Two-wheeler loan
+Employment: Informal
+Credit score: Unknown
+Emergency fund: ₹0
+Previous loans: Yes
+Repayment pattern: Poor
+Recent missed payments: 1
+Collateral: Property, declared value ₹0
+
+Adaptive questions
+How much do you have set aside as an emergency fund?
+How would you describe your past repayment pattern?
+
+Decision
+
+DON'T BORROW
+
+Reason: Recent or poor repayment behaviour indicates elevated borrowing risk.
+
+| Metric           |    Result |
+| ---------------- | --------: |
+| Safe EMI         |   ₹11,200 |
+| Borrower maximum | ₹3,52,846 |
+| Lender maximum   | ₹4,41,058 |
+| Fair rate        |   17%–29% |
+| Requested amount | ₹1,50,000 |
+
+
+Ravi
+
+Profile inputs
+
+Monthly income: ₹60,000
+Income stability: Variable
+Earning members: 2
+Dependents: 0
+Existing monthly debt: ₹0
+Outstanding debt: ₹0
+Essential expenses: ₹0
+Requested loan: ₹15,00,000
+Purpose: Stock expansion and delivery vehicle
+Loan type: Business loan
+Employment: Self-employed
+Credit score: Unknown
+Emergency fund: ₹0
+Previous loans: No
+Repayment pattern: Good
+Recent missed payments: 0
+Collateral: Property worth ₹45,00,000
+
+Adaptive questions asked
+
+How much do you have set aside as an emergency fund?
+How would you describe your past repayment pattern?
+
+Decision
+
+BORROW LESS
+
+| Metric           |     Result |
+| ---------------- | ---------: |
+| Safe EMI         |    ₹24,000 |
+| Borrower maximum |  ₹8,51,352 |
+| Lender maximum   | ₹10,64,189 |
+| Fair rate        |  13.4%–23% |
+| Requested amount | ₹15,00,000 |
+
+Priya
+
+Profile inputs
+
+Monthly income: ₹1,10,000
+Income stability: Stable
+Earning members: 0
+Dependents: 0
+Existing monthly debt: ₹14,000
+Outstanding debt: ₹0
+Rent: ₹28,000
+Utilities: ₹200
+Insurance: ₹150
+Requested loan: ₹8,00,000
+Purpose: Wedding
+Loan type: Personal loan
+Employment: Salaried
+Credit score: 780
+Previous loans: Yes
+Repayment pattern: Good
+Recent missed payments: 0
+Emergency fund: ₹0
+Collateral: Property, value ₹0
+Offered rate: 12%
+Preferred tenure: 60 months
+
+Adaptive questions asked
+
+What is your total outstanding debt balance?
+How much do you have set aside as an emergency fund?
+
+Decision
+
+BORROW
+
+Reason: The requested amount is within the calculated safe affordability limit.
+
+| Metric           |     Result |
+| ---------------- | ---------: |
+| Safe EMI         |    ₹25,359 |
+| Borrower maximum | ₹11,40,015 |
+| Lender maximum   | ₹18,43,157 |
+| Fair rate        |     8%–14% |
+| Requested amount |  ₹8,00,000 |
+| Offered rate     |        12% |
