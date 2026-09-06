@@ -11,23 +11,25 @@ export const getAdaptiveQuestions = (
   questions: Question[]
 ): Question[] => {
 
-const asked = new Set(
-  answers
-    .filter(a => a.value !== "")
-    .map(a => a.questionId)
-);
+  const asked = new Set(
+    answers
+      .filter(a => a.value !== "")
+      .map(a => a.questionId)
+  );
+
   return questions.filter(question => {
 
     if (asked.has(question.id)) {
       return false;
     }
 
+    // --- existing conditions ---
+
     if (
       (profile.employmentType === "SELF-EMPLOYED" ||
        profile.employmentType === "UNEMPLOYED") &&
       question.id === "incomeDocumentation"
     ) {
-      console.log("ADDING INCOME DOCUMENTATION");
       return true;
     }
 
@@ -35,7 +37,6 @@ const asked = new Set(
       !profile.emergencyFund &&
       question.id === "emergencyFund"
     ) {
-      console.log("ADDING EMERGENCY FUND");
       return true;
     }
 
@@ -49,6 +50,82 @@ const asked = new Set(
     if (
       profile.existingDebt.monthlyDebtObligation > 0 &&
       question.id === "outstandingDebtBalance"
+    ) {
+      return true;
+    }
+
+    // --- new conditions ---
+
+    // Essential expenses feed Disposable Capacity directly (RULES.md §4).
+    // Ask them once income is known, so the affordability number isn't
+    // silently computed on zero rent/utilities/insurance.
+    if (
+      profile.income.monthlyNetIncome > 0 &&
+      (question.id === "rent" ||
+       question.id === "utilities" ||
+       question.id === "insurance")
+    ) {
+      return true;
+    }
+
+    // Household size affects the resilience buffer and safe/lender max.
+    // Worth asking whenever income is known, same as essential expenses.
+    if (
+      profile.income.monthlyNetIncome > 0 &&
+      (question.id === "earningMembers" || question.id === "dependents")
+    ) {
+      return true;
+    }
+
+    // Tenure/rate refine EMI and fair-rate math (RULES.md §6, §8) once
+    // there's an actual loan amount to compute against.
+    if (
+      profile.loanRequest.loanAmount > 0 &&
+      question.id === "preferredTenure"
+    ) {
+      return true;
+    }
+
+    if (
+      profile.loanRequest.loanAmount > 0 &&
+      question.id === "offeredInterestRate"
+    ) {
+      return true;
+    }
+
+    // A known credit-score status is only useful for fairRate once we
+    // also have the actual score.
+    if (
+      profile.creditScore.status === "KNOWN" &&
+      question.id === "creditScoreValue"
+    ) {
+      return true;
+    }
+
+    // Collateral only materially changes lender capacity for secured
+    // products (RULES.md §11) — asking it for an unsecured personal
+    // loan wouldn't refine anything.
+    if (
+      (profile.loanRequest.productType === "LOAN_AGAINST_PROPERTY" ||
+       profile.loanRequest.productType === "TWO_WHEELER_LOAN") &&
+      (question.id === "collateralType" || question.id === "collateralValueAmount")
+    ) {
+      return true;
+    }
+
+    // Repayment history and missed payments drive the stress-test rules
+    // (RULES.md §9) — ask once we know there's borrowing history to
+    // check at all.
+    if (
+      profile.employmentType !== "UNEMPLOYED" &&
+      question.id === "hasPreviousLoans"
+    ) {
+      return true;
+    }
+
+    if (
+      answers.some(a => a.questionId === "hasPreviousLoans" && a.value === true) &&
+      question.id === "recentMissedPayments"
     ) {
       return true;
     }

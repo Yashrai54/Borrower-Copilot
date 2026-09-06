@@ -1,10 +1,9 @@
 import React from 'react'
 import { buildProfile } from "../domain/borrower/data"
 import { questions } from "../domain/questions/data"
-import { answers } from "../domain/QuestionAnswer/data"
 import { decisionEngine } from '../domain/rules/decisionEngine'
-import { getAdaptiveQuestions } from '../domain/borrower/data'
-import {useNavigate} from "react-router-dom"
+import { useAnswers } from '../context/AnswerContext'
+
 type FairRate = {
     min: number
     max: number
@@ -27,12 +26,12 @@ type VerdictCopy = {
     color: string
 }
 
+// These match the literal strings decisionEngine.ts actually returns.
 const VERDICT_COPY: Record<string, VerdictCopy> = {
     BORROW: { heading: "You're clear to borrow", color: '#2F6D4F' },
-    APPROVE: { heading: "You're clear to borrow", color: '#2F6D4F' },
-    DECLINE: { heading: "This isn't affordable right now", color: '#A23B2E' },
-    REJECT: { heading: "This isn't affordable right now", color: '#A23B2E' },
-    REVIEW: { heading: 'This needs a closer look', color: '#9A7B1D' },
+    BORROW_LESS: { heading: 'Consider borrowing less', color: '#9A7B1D' },
+    DONT_BORROW: { heading: "This isn't affordable right now", color: '#A23B2E' },
+    NO_REQUEST: { heading: "Let's see what you can borrow", color: '#4B5563' },
 }
 
 const styles: Record<string, React.CSSProperties> = {
@@ -85,6 +84,12 @@ const styles: Record<string, React.CSSProperties> = {
         fontWeight: 600,
         color: '#1B2430',
     },
+    rowValueHighlight: {
+        fontSize: 17,
+        fontVariantNumeric: 'tabular-nums',
+        fontWeight: 700,
+        color: '#9A7B1D',
+    },
     barWrap: {
         margin: '32px 0 8px',
     },
@@ -118,34 +123,15 @@ const styles: Record<string, React.CSSProperties> = {
         color: '#6B7280',
         padding: '48px 0',
     },
-    negotiateButton: {
-        display: 'inline-block',
-        marginTop: 32,
-        padding: '12px 24px',
-        fontSize: 15,
-        fontWeight: 600,
-        color: '#FAF9F6',
-        background: '#B08D2B',
-        border: 'none',
-        borderRadius: 4,
-        cursor: 'pointer',
-        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-        transition: 'background 0.15s ease',
-    },
 }
 
 const Result: React.FC = () => {
+    const { answers } = useAnswers()
     const profile = buildProfile(questions, answers)
     const decision: Decision | undefined = decisionEngine(profile)
 
-    console.log("Borrower Profile:", JSON.stringify(profile, null, 2))
-    console.log("DECISIONS FOR BORROWER", JSON.stringify(decision, null, 2))
-    const adaptiveQuestions =getAdaptiveQuestions(profile,answers,questions)
-    console.log(adaptiveQuestions)
-
-    const navigator = useNavigate()
-
-
+    // decisionEngine returns undefined when borrowerMax can't be
+    // calculated at all (e.g. essential inputs missing or invalid).
     if (!decision) {
         return (
             <div style={styles.page}>
@@ -175,11 +161,10 @@ const Result: React.FC = () => {
     const borrowerPct = ((borrowerMax || 0) / maxOfTwo) * 100
     const lenderPct = ((lenderMax || 0) / maxOfTwo) * 100
 
-    return (
-        
-        <div style={styles.page}>
+    const hasBorrowingRoom = borrowerMax > 0
 
-            
+    return (
+        <div style={styles.page}>
             <p style={styles.eyebrow}>Loan affordability check</p>
             <h1 style={{ ...styles.headline, color: copy.color }}>
                 {copy.heading}
@@ -193,8 +178,20 @@ const Result: React.FC = () => {
                     <span style={styles.rowValue}>{inr(safeEmi)} / month</span>
                 </div>
                 <div style={styles.row}>
-                    <span style={styles.rowLabel}>What you can safely borrow</span>
-                    <span style={styles.rowValue}>{inr(borrowerMax)}</span>
+                    <span style={styles.rowLabel}>
+                        {verdict === 'BORROW_LESS'
+                            ? 'Recommended amount instead'
+                            : 'What you can safely borrow'}
+                    </span>
+                    <span
+                        style={
+                            verdict === 'BORROW_LESS'
+                                ? styles.rowValueHighlight
+                                : styles.rowValue
+                        }
+                    >
+                        {inr(borrowerMax)}
+                    </span>
                 </div>
                 <div style={styles.row}>
                     <span style={styles.rowLabel}>What the lender could offer</span>
@@ -208,7 +205,7 @@ const Result: React.FC = () => {
                 </div>
             </div>
 
-            {lenderMax !== undefined && (
+            {hasBorrowingRoom && lenderMax !== undefined && (
                 <div style={styles.barWrap}>
                     <div style={styles.barTrack}>
                         <div
@@ -238,14 +235,7 @@ const Result: React.FC = () => {
                     </div>
                 </div>
             )}
-<button
-    style={styles.negotiateButton}
-    onMouseOver={(e) => (e.currentTarget.style.background = '#9A7B1D')}
-    onMouseOut={(e) => (e.currentTarget.style.background = '#B08D2B')}
-    onClick={() => navigator("/negotiationcard")}
->
-    Go to Negotiation Card
-</button>
+
             {reasons.length > 0 && (
                 <>
                     <p style={styles.sectionLabel}>Why</p>

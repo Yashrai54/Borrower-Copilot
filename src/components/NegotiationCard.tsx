@@ -1,9 +1,10 @@
+
+
 import React from 'react'
 import { buildProfile } from "../domain/borrower/data"
 import { questions } from "../domain/questions/data"
-import { answers } from "../domain/QuestionAnswer/data"
 import { decisionEngine } from '../domain/rules/decisionEngine'
-import type { BorrowerProfile } from '../domain/borrower/types'
+import { useAnswers } from "../context/AnswerContext"
 
 type FairRate = {
     min: number
@@ -19,7 +20,6 @@ type Decision = {
     fairRate?: FairRate
 }
 
-
 const inr = (n?: number) =>
     n === undefined ? '—' : '₹' + Math.round(n).toLocaleString('en-IN')
 
@@ -30,18 +30,19 @@ const buildNegotiationTips = (
     const tips: string[] = []
     const { borrowerMax, lenderMax, safeEmi, fairRate } = decision
 
-    
     if (requested !== undefined && requested > borrowerMax) {
         tips.push(`Ask for a lower loan amount — closer to ${inr(borrowerMax)}`)
     } else {
-        tips.push(`Your requested ${requested} is within your calculated safe borrowing limit.`)
+        tips.push('Ask for a lower loan amount if there is any room to')
     }
 
     tips.push(
-        `Ask the lender for a competitive interest rate within your fair-rate range.`
+        fairRate
+            ? `Ask for the lowest available rate — aim for ${fairRate.min}%`
+            : 'Ask for the lowest available rate'
     )
 
-    tips.push(`Keep the EMI at or below ${inr(safeEmi)}`)
+    tips.push(`Avoid EMI above ${inr(safeEmi)}`)
 
     if (lenderMax !== undefined && lenderMax > borrowerMax) {
         tips.push(
@@ -49,7 +50,7 @@ const buildNegotiationTips = (
         )
     }
 
-    tips.push('Confirm the processing fee, other applicable charges, total repayment amount, and all-in borrowing cost before accepting the loan.')
+    tips.push('Confirm all fees and total borrowing cost')
 
     return tips
 }
@@ -68,7 +69,6 @@ const styles: Record<string, React.CSSProperties> = {
         fontSize: 26,
         fontWeight: 600,
         margin: '0 0 20px',
-        color:"#1B2430"
     },
     row: {
         display: 'flex',
@@ -118,7 +118,8 @@ const styles: Record<string, React.CSSProperties> = {
 }
 
 const NegotiationCard = () => {
-    const profile: BorrowerProfile = buildProfile(questions, answers)
+    const { answers } = useAnswers()
+    const profile = buildProfile(questions, answers)
     const decision: Decision | undefined = decisionEngine(profile)
 
     if (!decision) {
@@ -126,6 +127,21 @@ const NegotiationCard = () => {
             <div style={styles.page}>
                 <p style={styles.empty}>
                     Couldn't work out a negotiation position from the answers given.
+                </p>
+            </div>
+        )
+    }
+
+    // DONT_BORROW (and the zero-affordability path) return borrowerMax
+    // as 0 — there's nothing to negotiate in that case, so say so
+    // instead of showing hollow tips like "avoid EMI above ₹0".
+    if (decision.borrowerMax <= 0) {
+        return (
+            <div style={styles.page}>
+                <h2 style={styles.headline}>Your Borrowing Position</h2>
+                <p style={styles.empty}>
+                    {decision.reasons[0] ||
+                        "There's no safe borrowing capacity to negotiate from right now."}
                 </p>
             </div>
         )
