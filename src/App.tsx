@@ -1,5 +1,5 @@
 import './App.css'
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom"
+import { Routes, Route, useNavigate } from "react-router-dom"
 import { AnswersProvider, useAnswers } from './context/AnswerContext'
 import Result from "./components/Result"
 import NegotiationCard from './components/NegotiationCard'
