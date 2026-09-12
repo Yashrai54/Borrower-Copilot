@@ -4,19 +4,7 @@ import { questions } from "../domain/questions/data"
 import { decisionEngine } from '../domain/rules/decisionEngine'
 import { useAnswers } from '../context/AnswerContext'
 
-type FairRate = {
-    min: number
-    max: number
-}
-
-type Decision = {
-    verdict: string
-    reasons: string[]
-    safeEmi: number
-    borrowerMax: number
-    lenderMax?: number
-    fairRate?: FairRate
-}
+type Decision = NonNullable<ReturnType<typeof decisionEngine>>
 
 const inr = (n?: number) =>
     n === undefined ? '—' : '₹' + Math.round(n).toLocaleString('en-IN')
@@ -161,7 +149,7 @@ const Result: React.FC = () => {
     const borrowerPct = ((borrowerMax || 0) / maxOfTwo) * 100
     const lenderPct = ((lenderMax || 0) / maxOfTwo) * 100
 
-    const hasBorrowingRoom = borrowerMax > 0
+    const hasBorrowingRoom = borrowerMax! > 0
 
     return (
         <div style={styles.page}>

@@ -6,19 +6,8 @@ import { questions } from "../domain/questions/data"
 import { decisionEngine } from '../domain/rules/decisionEngine'
 import { useAnswers } from "../context/AnswerContext"
 
-type FairRate = {
-    min: number
-    max: number
-}
 
-type Decision = {
-    verdict: string
-    reasons: string[]
-    safeEmi: number
-    borrowerMax: number
-    lenderMax?: number
-    fairRate?: FairRate
-}
+type Decision = NonNullable<ReturnType<typeof decisionEngine>>
 
 const inr = (n?: number) =>
     n === undefined ? '—' : '₹' + Math.round(n).toLocaleString('en-IN')
@@ -30,7 +19,7 @@ const buildNegotiationTips = (
     const tips: string[] = []
     const { borrowerMax, lenderMax, safeEmi, fairRate } = decision
 
-    if (requested !== undefined && requested > borrowerMax) {
+    if (requested !== undefined && requested > borrowerMax!) {
         tips.push(`Ask for a lower loan amount — closer to ${inr(borrowerMax)}`)
     } else {
         tips.push('Ask for a lower loan amount if there is any room to')
@@ -44,7 +33,7 @@ const buildNegotiationTips = (
 
     tips.push(`Avoid EMI above ${inr(safeEmi)}`)
 
-    if (lenderMax !== undefined && lenderMax > borrowerMax) {
+    if (lenderMax !== undefined && lenderMax > borrowerMax!) {
         tips.push(
             `The lender may offer up to ${inr(lenderMax)} — don't take more than what's safe for you`
         )
@@ -135,7 +124,7 @@ const NegotiationCard = () => {
     // DONT_BORROW (and the zero-affordability path) return borrowerMax
     // as 0 — there's nothing to negotiate in that case, so say so
     // instead of showing hollow tips like "avoid EMI above ₹0".
-    if (decision.borrowerMax <= 0) {
+    if (decision.borrowerMax! <= 0) {
         return (
             <div style={styles.page}>
                 <h2 style={styles.headline}>Your Borrowing Position</h2>
