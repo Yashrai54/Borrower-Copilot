@@ -49,7 +49,7 @@ export const lenderSideMaximumLoanAmount = (profile:BorrowerProfile)=>{
     const foirLimit = 0.50
     const foir = calculateFoir(profile)
 
-    const diff = foirLimit - (foir/100)
+    const diff = foirLimit - (foir!/100)
 
     const emi = diff* profile.income.monthlyNetIncome
     
