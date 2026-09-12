@@ -4,12 +4,12 @@ export const answers: Answer[] = [
     {
         id: "1",
         questionId: "monthlyIncome",
-        value: 110000
+        value: ""
     },
     {
         id: "2",
         questionId: "incomeStability",
-        value: "STABLE"
+        value: ""
     },
     {
         id: "3",
@@ -24,7 +24,7 @@ export const answers: Answer[] = [
     {
         id: "5",
         questionId: "existingDebt",
-        value: 14000
+        value: ""
     },
     {
         id: "6",
@@ -34,57 +34,57 @@ export const answers: Answer[] = [
     {
         id: "7",
         questionId: "rent",
-        value: 28000
+        value: ""
     },
     {
         id: "8",
         questionId: "utilities",
-        value: 200
+        value: ""
     },
     {
         id: "9",
         questionId: "insurance",
-        value: 150
+        value: ""
     },
     {
         id: "10",
         questionId: "loanAmount",
-        value: 800000
+        value: ""
     },
     {
         id:"11",
         questionId:"productType",
-        value:"PERSONAL_LOAN"
+        value:""
     },
     {
         id: "11",
         questionId: "loanPurpose",
-        value: "Wedding"
+        value: ""
     },
     {
         id: "12",
         questionId: "preferredTenure",
-        value: "60"
+        value: ""
     },
     {
         id: "13",
         questionId: "offeredInterestRate",
-        value: "12"
+        value: ""
     },
     {
         id: "14",
         questionId: "employmentType",
-        value: "SALARIED"
+        value: ""
     },
     {
         id: "15",
         questionId: "creditScoreStatus",
-        value: "KNOWN"
+        value: ""
     },
     {
         id: "16",
         questionId: "creditScoreValue",
-        value: 780
+        value: ""
     },
     {
         id: "17",
@@ -104,7 +104,7 @@ export const answers: Answer[] = [
     {
         id: "20",
         questionId: "hasPreviousLoans",
-        value: true
+        value: ""
     },
     {
         id: "21",
